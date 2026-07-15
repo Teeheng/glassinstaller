@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ทำเนียบช่างกระจก</title>
+<style>
+  :root{
+    --primary:#0d6efd;
+    --bg:#f4f6f9;
+    --card:#ffffff;
+    --border:#dde2ea;
+    --text:#1f2933;
+    --muted:#6b7684;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    font-family:"Segoe UI","TH Sarabun New","Sarabun",sans-serif;
+    background:var(--bg);
+    color:var(--text);
+    padding:24px 16px 60px;
+  }
+  .wrap{max-width:1100px;margin:0 auto;}
+  header{margin-bottom:20px;}
+  header h1{font-size:1.4rem;margin:0 0 4px;}
+  header p{color:var(--muted);margin:0;font-size:0.9rem;}
+
+  .stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin-bottom:20px;}
+  .stat-card{
+    background:var(--card);
+    border:1px solid var(--border);
+    border-radius:10px;
+    padding:14px 16px;
+  }
+  .stat-card .num{font-size:1.6rem;font-weight:700;color:var(--primary);}
+  .stat-card .label{font-size:0.8rem;color:var(--muted);}
+
+  .toolbar{
+    display:flex;flex-wrap:wrap;gap:10px;
+    margin-bottom:14px;
+  }
+  .toolbar input, .toolbar select{
+    padding:8px 12px;
+    border:1px solid var(--border);
+    border-radius:8px;
+    font-size:0.88rem;
+    font-family:inherit;
+  }
+  .toolbar input[type=text]{flex:1;min-width:200px;}
+  button{
+    background:var(--primary);
+    color:#fff;
+    border:none;
+    padding:8px 16px;
+    border-radius:8px;
+    font-size:0.88rem;
+    cursor:pointer;
+  }
+
+  .table-wrap{
+    background:var(--card);
+    border:1px solid var(--border);
+    border-radius:10px;
+    overflow-x:auto;
+  }
+  table{border-collapse:collapse;width:100%;font-size:0.85rem;white-space:nowrap;}
+  th,td{padding:10px 12px;text-align:left;border-bottom:1px solid var(--border);}
+  th{background:#eef2f7;position:sticky;top:0;}
+  tr:hover td{background:#f8fafc;}
+  .badge{
+    display:inline-block;
+    background:#e7f1ff;
+    color:var(--primary);
+    border-radius:6px;
+    padding:2px 8px;
+    font-size:0.75rem;
+    margin:1px;
+  }
+  #loading, #empty{padding:30px;text-align:center;color:var(--muted);}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>ทำเนียบช่างกระจก</h1>
+    <p>ข้อมูลช่างที่ลงทะเบียนผ่านฟอร์มออนไลน์ (ดึงข้อมูลสดจาก Google Sheets)</p>
+  </header>
+
+  <div class="stats" id="stats"></div>
+
+  <div class="toolbar">
+    <input type="text" id="search" placeholder="ค้นหาชื่อ, จังหวัด, ประเภทงาน...">
+    <select id="filterType">
+      <option value="">ทุกประเภท</option>
+      <option value="บุคคล">บุคคล</option>
+      <option value="นิติบุคคล">นิติบุคคล</option>
+    </select>
+    <button id="refreshBtn">รีเฟรช</button>
+  </div>
+
+  <div class="table-wrap">
+    <div id="loading">กำลังโหลดข้อมูล...</div>
+    <table id="dataTable" style="display:none;">
+      <thead>
+        <tr>
+          <th>วันที่ส่ง</th>
+          <th>ประเภท</th>
+          <th>ชื่อ-นามสกุล / ร้าน</th>
+          <th>เบอร์โทร</th>
+          <th>จังหวัดที่ให้บริการ</th>
+          <th>ความเชี่ยวชาญ</th>
+          <th>ประสบการณ์ (ปี)</th>
+          <th>รับงานด่วน</th>
+        </tr>
+      </thead>
+      <tbody id="tableBody"></tbody>
+    </table>
+    <div id="empty" style="display:none;">ยังไม่มีข้อมูล</div>
+  </div>
+</div>
+
+<script>
+  // TODO: ใส่ URL ของ Web App (Google Apps Script) อันเดียวกับใน form.html
+  const ENDPOINT_URL = "https://script.google.com/macros/s/AKfycbx523d_kB8DGDtn5mmnt0HCaxG7-MzWmM6XjaX6bN-broV_fGJSIj7f_fLDaIcXEUSdtQ/exec";
+
+  let allRows = [];
+
+  async function loadData() {
+    document.getElementById('loading').style.display = 'block';
+    document.getElementById('dataTable').style.display = 'none';
+    document.getElementById('empty').style.display = 'none';
+
+    if (ENDPOINT_URL.indexOf('http') !== 0) {
+      document.getElementById('loading').textContent = 'ยังไม่ได้ตั้งค่า ENDPOINT_URL ในไฟล์ display.html (ดูวิธีตั้งค่าใน README.md)';
+      return;
+    }
+
+    try {
+      const res = await fetch(ENDPOINT_URL);
+      allRows = await res.json();
+      renderStats(allRows);
+      renderTable(allRows);
+    } catch (err) {
+      document.getElementById('loading').textContent = 'โหลดข้อมูลไม่สำเร็จ กรุณาลองใหม่';
+    }
+  }
+
+  function renderStats(rows) {
+    const statsEl = document.getElementById('stats');
+    const total = rows.length;
+    const juristic = rows.filter(r => r['ประเภทผู้กรอก'] === 'นิติบุคคล').length;
+    const provinces = new Set();
+    rows.forEach(r => {
+      String(r['จังหวัดที่ให้บริการ'] || '').split(',').map(s => s.trim()).filter(Boolean).forEach(p => provinces.add(p));
+    });
+    const urgent = rows.filter(r => r['รับงานด่วนได้หรือไม่'] === 'รับได้').length;
+
+    statsEl.innerHTML = `
+      <div class="stat-card"><div class="num">${total}</div><div class="label">ช่างทั้งหมด</div></div>
+      <div class="stat-card"><div class="num">${juristic}</div><div class="label">เป็นนิติบุคคล</div></div>
+      <div class="stat-card"><div class="num">${provinces.size}</div><div class="label">จังหวัดที่ครอบคลุม</div></div>
+      <div class="stat-card"><div class="num">${urgent}</div><div class="label">รับงานด่วนได้</div></div>
+    `;
+  }
+
+  function renderTable(rows) {
+    const tbody = document.getElementById('tableBody');
+    const table = document.getElementById('dataTable');
+    const empty = document.getElementById('empty');
+    const loading = document.getElementById('loading');
+    loading.style.display = 'none';
+
+    if (!rows.length) {
+      empty.style.display = 'block';
+      table.style.display = 'none';
+      return;
+    }
+
+    tbody.innerHTML = rows.map(r => {
+      const name = r['ประเภทผู้กรอก'] === 'นิติบุคคล'
+        ? (r['ชื่อร้าน/บริษัท'] || r['ชื่อ-นามสกุล'] || '')
+        : (r['ชื่อ-นามสกุล'] || '');
+      const skills = String(r['ประเภทงานที่ถนัด'] || '')
+        .split(',').map(s => s.trim()).filter(Boolean)
+        .map(s => `<span class="badge">${escapeHtml(s)}</span>`).join('');
+      const date = r['วันเวลาที่ส่งข้อมูล'] ? new Date(r['วันเวลาที่ส่งข้อมูล']).toLocaleDateString('th-TH') : '';
+
+      return `<tr>
+        <td>${date}</td>
+        <td>${escapeHtml(r['ประเภทผู้กรอก'] || '')}</td>
+        <td>${escapeHtml(name)}</td>
+        <td>${escapeHtml(r['เบอร์โทรศัพท์'] || '')}</td>
+        <td>${escapeHtml(r['จังหวัดที่ให้บริการ'] || '')}</td>
+        <td>${skills}</td>
+        <td>${escapeHtml(String(r['จำนวนปีประสบการณ์'] || ''))}</td>
+        <td>${escapeHtml(r['รับงานด่วนได้หรือไม่'] || '')}</td>
+      </tr>`;
+    }).join('');
+
+    table.style.display = 'table';
+    empty.style.display = 'none';
+  }
+
+  function escapeHtml(str) {
+    return String(str)
+      .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+  }
+
+  function applyFilters() {
+    const q = document.getElementById('search').value.trim().toLowerCase();
+    const type = document.getElementById('filterType').value;
+    let rows = allRows;
+    if (type) rows = rows.filter(r => r['ประเภทผู้กรอก'] === type);
+    if (q) {
+      rows = rows.filter(r => Object.values(r).some(v => String(v || '').toLowerCase().includes(q)));
+    }
+    renderTable(rows);
+  }
+
+  document.getElementById('search').addEventListener('input', applyFilters);
+  document.getElementById('filterType').addEventListener('change', applyFilters);
+  document.getElementById('refreshBtn').addEventListener('click', loadData);
+
+  loadData();
+</script>
+</body>
+</html>

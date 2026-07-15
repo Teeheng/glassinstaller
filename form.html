@@ -1,0 +1,388 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>แบบฟอร์มลงทะเบียนช่างกระจก</title>
+<style>
+  :root{
+    --primary:#0d6efd;
+    --primary-dark:#0b5ed7;
+    --bg:#f4f6f9;
+    --card:#ffffff;
+    --border:#dde2ea;
+    --text:#1f2933;
+    --muted:#6b7684;
+    --error:#d92d20;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    font-family:"Segoe UI","TH Sarabun New","Sarabun",sans-serif;
+    background:var(--bg);
+    color:var(--text);
+    padding:24px 12px 60px;
+  }
+  .wrap{max-width:720px;margin:0 auto;}
+  header{text-align:center;margin-bottom:24px;}
+  header h1{font-size:1.5rem;margin-bottom:4px;}
+  header p{color:var(--muted);margin:0;font-size:0.95rem;}
+  .card{
+    background:var(--card);
+    border:1px solid var(--border);
+    border-radius:12px;
+    padding:20px 22px;
+    margin-bottom:18px;
+    box-shadow:0 1px 2px rgba(16,24,40,0.04);
+  }
+  .card h2{
+    font-size:1.05rem;
+    margin:0 0 14px;
+    padding-bottom:10px;
+    border-bottom:1px solid var(--border);
+    display:flex;
+    align-items:center;
+    gap:8px;
+  }
+  .card h2 .num{
+    background:var(--primary);
+    color:#fff;
+    width:24px;height:24px;
+    border-radius:50%;
+    font-size:0.8rem;
+    display:inline-flex;align-items:center;justify-content:center;
+    flex-shrink:0;
+  }
+  .field{margin-bottom:14px;}
+  label{display:block;font-size:0.9rem;font-weight:600;margin-bottom:6px;}
+  label .req{color:var(--error);margin-left:2px;}
+  .hint{font-size:0.78rem;color:var(--muted);margin-top:4px;}
+  input[type=text],input[type=tel],input[type=email],input[type=number],select,textarea{
+    width:100%;
+    padding:10px 12px;
+    border:1px solid var(--border);
+    border-radius:8px;
+    font-size:0.92rem;
+    font-family:inherit;
+    background:#fff;
+    color:var(--text);
+  }
+  textarea{min-height:80px;resize:vertical;}
+  input:focus,select:focus,textarea:focus{outline:2px solid var(--primary);outline-offset:1px;}
+  .radio-row,.checkbox-grid{display:flex;flex-wrap:wrap;gap:10px;}
+  .radio-row label,.checkbox-grid label{
+    font-weight:400;
+    display:flex;align-items:center;gap:6px;
+    background:#f8fafc;
+    border:1px solid var(--border);
+    padding:8px 12px;
+    border-radius:8px;
+    cursor:pointer;
+    margin-bottom:0;
+    font-size:0.88rem;
+  }
+  .radio-row input,.checkbox-grid input{width:auto;}
+  .checkbox-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));}
+  .consent{
+    background:#fff8e6;
+    border:1px solid #f3d99a;
+  }
+  .consent label{font-weight:400;display:flex;align-items:flex-start;gap:8px;font-size:0.88rem;}
+  .consent input{margin-top:3px;width:auto;}
+  #section-juristic{display:none;}
+  .submit-bar{text-align:center;margin-top:20px;}
+  button{
+    background:var(--primary);
+    color:#fff;
+    border:none;
+    padding:12px 36px;
+    border-radius:8px;
+    font-size:1rem;
+    font-weight:600;
+    cursor:pointer;
+  }
+  button:hover{background:var(--primary-dark);}
+  button:disabled{opacity:0.6;cursor:not-allowed;}
+  #status{margin-top:14px;font-size:0.9rem;text-align:center;}
+  #status.error{color:var(--error);}
+  #status.success{color:#12794f;}
+  .row2{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+  @media (max-width:480px){.row2{grid-template-columns:1fr;}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>แบบฟอร์มลงทะเบียนช่างกระจก</h1>
+    <p>กรอกข้อมูลเพื่อเข้าร่วมเครือข่ายช่างกระจกของเรา ใช้เวลาประมาณ 3-5 นาที</p>
+  </header>
+
+  <form id="techForm">
+
+    <div class="card">
+      <h2><span class="num">1</span>ประเภทผู้กรอกข้อมูล</h2>
+      <div class="field">
+        <label>ท่านเป็น <span class="req">*</span></label>
+        <div class="radio-row">
+          <label><input type="radio" name="personType" value="บุคคล" required checked> บุคคล (ช่างอิสระ)</label>
+          <label><input type="radio" name="personType" value="นิติบุคคล" required> นิติบุคคล (ร้าน/บริษัท)</label>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2><span class="num">2</span>ข้อมูลส่วนตัว</h2>
+      <div class="row2">
+        <div class="field">
+          <label>ชื่อ-นามสกุล <span class="req">*</span></label>
+          <input type="text" name="fullName" required>
+        </div>
+        <div class="field">
+          <label>ชื่อเล่น</label>
+          <input type="text" name="nickname">
+        </div>
+      </div>
+      <div class="row2">
+        <div class="field">
+          <label>เบอร์โทรศัพท์ <span class="req">*</span></label>
+          <input type="tel" name="phone" required pattern="[0-9\-\s]{9,15}">
+        </div>
+        <div class="field">
+          <label>LINE ID</label>
+          <input type="text" name="lineId">
+        </div>
+      </div>
+      <div class="field">
+        <label>อีเมล</label>
+        <input type="email" name="email">
+      </div>
+      <div class="field">
+        <label>ที่อยู่ / จังหวัด-อำเภอที่อยู่อาศัย</label>
+        <input type="text" name="addressProvince">
+      </div>
+    </div>
+
+    <div class="card" id="section-juristic">
+      <h2><span class="num">3</span>ข้อมูลร้าน/นิติบุคคล</h2>
+      <div class="field">
+        <label>ชื่อร้าน/บริษัท <span class="req">*</span></label>
+        <input type="text" name="companyName">
+      </div>
+      <div class="row2">
+        <div class="field">
+          <label>เลขทะเบียนนิติบุคคล/ภาษี <span class="req">*</span></label>
+          <input type="text" name="companyTaxId">
+        </div>
+        <div class="field">
+          <label>ปีที่จดทะเบียน/เริ่มกิจการ</label>
+          <input type="text" name="companyYear" placeholder="เช่น 2560">
+        </div>
+      </div>
+      <div class="field">
+        <label>จำนวนทีมช่าง/พนักงาน</label>
+        <input type="number" name="teamSize" min="0">
+      </div>
+    </div>
+
+    <div class="card">
+      <h2><span class="num">4</span>ความเชี่ยวชาญ</h2>
+      <div class="field">
+        <label>ประเภทงานที่ถนัด (เลือกได้มากกว่า 1)</label>
+        <div class="checkbox-grid">
+          <label><input type="checkbox" name="skills" value="กระจกบ้าน"> กระจกบ้าน</label>
+          <label><input type="checkbox" name="skills" value="กระจกอาคารสูง"> กระจกอาคารสูง</label>
+          <label><input type="checkbox" name="skills" value="กระจกเงา"> กระจกเงา</label>
+          <label><input type="checkbox" name="skills" value="กระจกนิรภัย/ลามิเนต"> กระจกนิรภัย/ลามิเนต</label>
+          <label><input type="checkbox" name="skills" value="บานเลื่อน-บานสวิง"> บานเลื่อน-บานสวิง</label>
+          <label><input type="checkbox" name="skills" value="ผนังกระจก"> ผนังกระจก</label>
+          <label><input type="checkbox" name="skills" value="ราวบันไดกระจก"> ราวบันไดกระจก</label>
+          <label><input type="checkbox" name="skills" value="ราวกันตกกระจก"> ราวกันตกกระจก</label>
+          <label><input type="checkbox" name="skills" value="ประตูกระจกอัตโนมัติ"> ประตูกระจกอัตโนมัติ</label>
+          <label><input type="checkbox" name="skills" value="อื่นๆ"> อื่นๆ</label>
+        </div>
+      </div>
+      <div class="row2">
+        <div class="field">
+          <label>จำนวนปีประสบการณ์</label>
+          <input type="number" name="experienceYears" min="0">
+        </div>
+        <div class="field">
+          <label>ใบรับรอง/ใบประกาศนียบัตร (ถ้ามี)</label>
+          <input type="text" name="certificate">
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2><span class="num">5</span>พื้นที่และความพร้อมให้บริการ</h2>
+      <div class="field">
+        <label>จังหวัดที่ให้บริการ</label>
+        <input type="text" name="serviceProvinces" placeholder="เช่น กรุงเทพฯ, นนทบุรี, ปทุมธานี">
+      </div>
+      <div class="row2">
+        <div class="field">
+          <label>พร้อมเดินทางต่างจังหวัดหรือไม่</label>
+          <select name="travelOk">
+            <option value="พร้อม">พร้อม</option>
+            <option value="ไม่พร้อม">ไม่พร้อม</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>รับงานด่วนได้หรือไม่</label>
+          <select name="urgentOk">
+            <option value="รับได้">รับได้</option>
+            <option value="รับไม่ได้">รับไม่ได้</option>
+          </select>
+        </div>
+      </div>
+      <div class="field">
+        <label>ช่วงเวลาที่ว่างรับงาน</label>
+        <input type="text" name="availability" placeholder="เช่น จันทร์-ศุกร์, ทุกวัน">
+      </div>
+    </div>
+
+    <div class="card">
+      <h2><span class="num">6</span>เครื่องมือ/ศักยภาพ</h2>
+      <div class="row2">
+        <div class="field">
+          <label>มีรถขนส่งหรือไม่</label>
+          <select name="hasVehicle">
+            <option value="มี">มี</option>
+            <option value="ไม่มี">ไม่มี</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>มีเครื่องมือ/อุปกรณ์ติดตั้งครบหรือไม่</label>
+          <select name="hasTools">
+            <option value="ครบ">ครบ</option>
+            <option value="ไม่ครบ">ไม่ครบ</option>
+          </select>
+        </div>
+      </div>
+      <div class="field">
+        <label>ขนาดงานใหญ่ที่สุดที่เคยรับ</label>
+        <input type="text" name="biggestJob" placeholder="เช่น กระจกบานใหญ่ 3x2 เมตร, อาคาร 5 ชั้น">
+      </div>
+    </div>
+
+    <div class="card">
+      <h2><span class="num">7</span>ผลงานที่ผ่านมา</h2>
+      <div class="field">
+        <label>ลิงก์ผลงาน/เพจ/โซเชียลมีเดีย</label>
+        <input type="text" name="portfolioLink" placeholder="เช่น ลิงก์ Facebook/Instagram">
+      </div>
+      <div class="field">
+        <label>คำอธิบายผลงานเด่น</label>
+        <textarea name="portfolioDesc" placeholder="เล่าถึงงานที่ภูมิใจ หรือประสบการณ์ที่เกี่ยวข้อง"></textarea>
+      </div>
+    </div>
+
+    <div class="card consent">
+      <h2><span class="num">8</span>ความยินยอม</h2>
+      <div class="field">
+        <label><input type="checkbox" name="consentPdpa" value="ยินยอม" required>
+          ข้าพเจ้ายินยอมให้เก็บ รวบรวม และใช้ข้อมูลส่วนบุคคลข้างต้น ตามพระราชบัญญัติคุ้มครองข้อมูลส่วนบุคคล (PDPA) เพื่อวัตถุประสงค์ในการติดต่อประสานงานและคัดเลือกช่างเข้าร่วมเครือข่าย <span class="req">*</span>
+        </label>
+      </div>
+      <div class="field">
+        <label><input type="checkbox" name="consentNews" value="ยินยอม">
+          ข้าพเจ้ายินยอมรับข่าวสาร โปรโมชั่น และงานที่เกี่ยวข้องเพิ่มเติม
+        </label>
+      </div>
+    </div>
+
+    <div class="submit-bar">
+      <button type="submit" id="submitBtn">ส่งข้อมูล</button>
+      <div id="status"></div>
+    </div>
+
+  </form>
+</div>
+
+<script>
+  // TODO: หลังจาก Deploy Google Apps Script เป็น Web App แล้ว ให้นำ URL มาใส่ตรงนี้
+  const ENDPOINT_URL = "https://script.google.com/macros/s/AKfycbx523d_kB8DGDtn5mmnt0HCaxG7-MzWmM6XjaX6bN-broV_fGJSIj7f_fLDaIcXEUSdtQ/exec";
+
+  const personRadios = document.querySelectorAll('input[name="personType"]');
+  const juristicSection = document.getElementById('section-juristic');
+  const companyName = document.querySelector('input[name="companyName"]');
+  const companyTaxId = document.querySelector('input[name="companyTaxId"]');
+
+  function toggleJuristic() {
+    const isJuristic = document.querySelector('input[name="personType"]:checked').value === 'นิติบุคคล';
+    juristicSection.style.display = isJuristic ? 'block' : 'none';
+    companyName.required = isJuristic;
+    companyTaxId.required = isJuristic;
+  }
+  personRadios.forEach(r => r.addEventListener('change', toggleJuristic));
+  toggleJuristic();
+
+  const form = document.getElementById('techForm');
+  const statusEl = document.getElementById('status');
+  const submitBtn = document.getElementById('submitBtn');
+
+  form.addEventListener('submit', async function (e) {
+    e.preventDefault();
+
+    if (ENDPOINT_URL.indexOf('http') !== 0) {
+      statusEl.className = 'error';
+      statusEl.textContent = 'ยังไม่ได้ตั้งค่า ENDPOINT_URL ในไฟล์ form.html (ดูวิธีตั้งค่าใน README.md)';
+      return;
+    }
+
+    const formData = new FormData(form);
+    const skills = formData.getAll('skills');
+    const payload = {
+      'ประเภทผู้กรอก': formData.get('personType') || '',
+      'ชื่อ-นามสกุล': formData.get('fullName') || '',
+      'ชื่อเล่น': formData.get('nickname') || '',
+      'เบอร์โทรศัพท์': formData.get('phone') || '',
+      'LINE ID': formData.get('lineId') || '',
+      'อีเมล': formData.get('email') || '',
+      'ที่อยู่ / จังหวัด-อำเภอ': formData.get('addressProvince') || '',
+      'ชื่อร้าน/บริษัท': formData.get('companyName') || '',
+      'เลขทะเบียนนิติบุคคล/ภาษี': formData.get('companyTaxId') || '',
+      'ปีที่จดทะเบียน/เริ่มกิจการ': formData.get('companyYear') || '',
+      'จำนวนทีมช่าง/พนักงาน': formData.get('teamSize') || '',
+      'ประเภทงานที่ถนัด': skills,
+      'จำนวนปีประสบการณ์': formData.get('experienceYears') || '',
+      'ใบรับรอง/ใบประกาศนียบัตร': formData.get('certificate') || '',
+      'จังหวัดที่ให้บริการ': formData.get('serviceProvinces') || '',
+      'พร้อมเดินทางต่างจังหวัด': formData.get('travelOk') || '',
+      'ช่วงเวลาที่ว่างรับงาน': formData.get('availability') || '',
+      'รับงานด่วนได้หรือไม่': formData.get('urgentOk') || '',
+      'มีรถขนส่ง': formData.get('hasVehicle') || '',
+      'มีเครื่องมือ/อุปกรณ์ครบ': formData.get('hasTools') || '',
+      'ขนาดงานใหญ่ที่สุดที่เคยรับ': formData.get('biggestJob') || '',
+      'ลิงก์ผลงาน/เพจ/โซเชียล': formData.get('portfolioLink') || '',
+      'คำอธิบายผลงานเด่น': formData.get('portfolioDesc') || '',
+      'ยินยอมให้เก็บข้อมูลตาม PDPA': formData.get('consentPdpa') || '',
+      'ยินยอมรับข่าวสาร/งานที่เกี่ยวข้อง': formData.get('consentNews') || 'ไม่ยินยอม'
+    };
+
+    submitBtn.disabled = true;
+    statusEl.className = '';
+    statusEl.textContent = 'กำลังส่งข้อมูล...';
+
+    try {
+      // ใช้ text/plain เพื่อหลีกเลี่ยง CORS preflight ของ Google Apps Script
+      await fetch(ENDPOINT_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+        body: JSON.stringify(payload)
+      });
+
+      statusEl.className = 'success';
+      statusEl.textContent = 'ส่งข้อมูลเรียบร้อยแล้ว ขอบคุณครับ/ค่ะ';
+      form.reset();
+      toggleJuristic();
+    } catch (err) {
+      statusEl.className = 'error';
+      statusEl.textContent = 'เกิดข้อผิดพลาดในการส่งข้อมูล กรุณาลองใหม่อีกครั้ง';
+    } finally {
+      submitBtn.disabled = false;
+    }
+  });
+</script>
+</body>
+</html>
