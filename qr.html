@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>QR Code ฟอร์มลงทะเบียนช่างกระจก</title>
+<style>
+  :root{
+    --primary:#0d6efd;
+    --primary-dark:#0b5ed7;
+    --bg:#f4f6f9;
+    --card:#ffffff;
+    --border:#dde2ea;
+    --text:#1f2933;
+    --muted:#6b7684;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    font-family:"Segoe UI","TH Sarabun New","Sarabun",sans-serif;
+    background:var(--bg);
+    color:var(--text);
+    padding:40px 16px;
+    display:flex;
+    justify-content:center;
+  }
+  .card{
+    background:var(--card);
+    border:1px solid var(--border);
+    border-radius:16px;
+    padding:32px;
+    max-width:420px;
+    width:100%;
+    text-align:center;
+    box-shadow:0 2px 8px rgba(16,24,40,0.06);
+  }
+  h1{font-size:1.25rem;margin:0 0 6px;}
+  p.sub{color:var(--muted);font-size:0.88rem;margin:0 0 24px;}
+  .qr-box{
+    background:#fff;
+    border:1px solid var(--border);
+    border-radius:12px;
+    padding:16px;
+    display:inline-block;
+    margin-bottom:18px;
+  }
+  .qr-box img{display:block;width:280px;height:280px;max-width:100%;}
+  .link{
+    word-break:break-all;
+    font-size:0.85rem;
+    color:var(--primary);
+    background:#f0f6ff;
+    border-radius:8px;
+    padding:10px 12px;
+    margin-bottom:18px;
+  }
+  .actions{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;}
+  button, a.btn{
+    background:var(--primary);
+    color:#fff;
+    border:none;
+    padding:10px 20px;
+    border-radius:8px;
+    font-size:0.9rem;
+    font-weight:600;
+    cursor:pointer;
+    text-decoration:none;
+    display:inline-block;
+  }
+  button:hover, a.btn:hover{background:var(--primary-dark);}
+  .btn.secondary{background:#fff;color:var(--primary);border:1px solid var(--primary);}
+  @media print{
+    body{background:#fff;padding:0;}
+    .actions{display:none;}
+    .card{box-shadow:none;border:none;}
+  }
+</style>
+</head>
+<body>
+  <div class="card">
+    <h1>สแกนเพื่อลงทะเบียนช่างกระจก</h1>
+    <p class="sub">ใช้กล้องมือถือสแกน QR Code เพื่อเปิดฟอร์มกรอกข้อมูล</p>
+
+    <div class="qr-box">
+      <img id="qrImg" src="" alt="QR Code ฟอร์มลงทะเบียนช่างกระจก">
+    </div>
+
+    <div class="link" id="linkText"></div>
+
+    <div class="actions">
+      <button onclick="downloadQr()">ดาวน์โหลด QR (PNG)</button>
+      <button class="secondary" onclick="window.print()">พิมพ์</button>
+    </div>
+  </div>
+
+<script>
+  // ลิงก์ฟอร์มที่ deploy ไว้แล้วบน GitHub Pages
+  const FORM_URL = "https://teeheng.github.io/glassinstaller/form.html";
+
+  const qrApiUrl = "https://api.qrserver.com/v1/create-qr-code/?size=500x500&margin=10&data=" + encodeURIComponent(FORM_URL);
+
+  document.getElementById('qrImg').src = qrApiUrl;
+  document.getElementById('linkText').textContent = FORM_URL;
+
+  function downloadQr() {
+    const a = document.createElement('a');
+    a.href = qrApiUrl;
+    a.download = 'qr-form-changkrajok.png';
+    a.target = '_blank';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+  }
+</script>
+</body>
+</html>
